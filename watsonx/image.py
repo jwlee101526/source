@@ -39,27 +39,16 @@ def image_to_base64(image):
     return image_base64
 
 
-def summarize_image(image):
+def summarize_image(image, user_request):
 
-    
     if image is None:
         return "이미지를 업로드하여 주십시오."
 
     base64_img = image_to_base64(image)
 
-    system_prompt = """
-    당신은 이미지 분석 전문가 AI입니다. 주어진 이미지를 사용자의 요청에 따라 
-    - 이미지 설명
-    - 분위기 분석
-    - 감정 분석
-    - 객체 설명
-    - 캡션 생성
-    - 스타일 분석
+    system_prompt = "당신은 이미지 분석 전문가 AI입니다."
 
-    등을 수행하세요
-    """
-
-    user_prompt = "주어진 이미지를 분석해라"
+    user_prompt_text = f"주어진 이미지를 다음 사용자의 요청에 따라 분석해 주세요: {user_request}"
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -74,7 +63,7 @@ def summarize_image(image):
                 },
                 {
                     "type": "text",
-                    "text": user_prompt,
+                    "text": user_prompt_text,
                 },
             ],
         },
@@ -88,6 +77,7 @@ demo = gr.Interface(
     fn=summarize_image,
     inputs=[
         gr.Image(type="pil"),
+        gr.Textbox(lines=1, placeholder="요청사항을 입력하세요", label="[선택] 사용자 요청"),
     ],
     outputs=[gr.Markdown()],
     title="이미지 분석 프로그램",
