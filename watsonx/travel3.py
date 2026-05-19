@@ -68,55 +68,50 @@ def travel_recommand(message, history):
         {"role": "system", "content": system_prompt}
     ]
 
-    max_history_turns = 5 
-
-    for user_msg, assistant_msg in history[-max_history_turns:]:
-
-        user_text = ""
-        if isinstance(user_msg, dict) and "text" in user_msg:
-            user_text = user_msg["text"]
-        elif isinstance(user_msg, str):
-            user_text = user_msg
+    for item in history:
+        role = item["role"]
+        content = item["content"]
         
-        if user_text:
-            messages_to_send.append({"role": "user", "content": user_text})
-        
+        texts = []
 
-        if assistant_msg:
-            messages_to_send.append({"role": "assistant", "content": assistant_msg})
+        if isinstance(content, list):
+            for c in content:
+                
+                if c.get("type") == "text":
+                    texts.append(c.get("text", ""))
+        elif isinstance(content,str):
+            texts.append(content)
 
+        messages_to_send.append({"role": role, "content": "".join(texts)})
 
-    current_user_text = message.get('text', '')
-    current_user_files = message.get('files', [])
-
-    current_user_content_parts = []
-    if current_user_text:
-        current_user_content_parts.append({"type": "text", "text": current_user_text})
-
-    if current_user_files:
-        image_path = current_user_files[0]
-        image = Image.open(image_path)
-
-        max_size = (1024, 1024)
-        image.thumbnail(max_size, Image.Resampling.LANCZOS)
-
-        # Base64 코드로 변환
-        image_base64 = image_to_base64(image)
-        current_user_content_parts.append({"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}})
-
-    if current_user_content_parts:
-        messages_to_send.append({"role": "user", "content": current_user_content_parts})
-    elif current_user_text:
-        messages_to_send.append({"role": "user", "content": current_user_text})
     
-    generated_response = model.chat_stream(messages=messages_to_send)
+    text = message.get("text", "")
+    files = message.get("files", "")
 
-    full_response = ""
+    if files:
+        image = Image.open(files[0])
+        base64_img = image_to_base64(image)
+        messages_to_send.append({
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_img}"
+                    },
+                },
+                {
+                    "type": "text",
+                    "text": text,
+                },
+            ],
+        })
+    else:
+        messages_to_send.append({"role": "user", "content": text})
 
-    for chunk in generated_response:
-        if chunk["choices"]:
-            full_response += chunk["choices"][0]["delta"].get("content", "")
-            yield full_response
+    response = model.chat(messages=messages_to_send)
+
+    full_response = response["choices"][0]["message"]["content"]
 
     return full_response
 
