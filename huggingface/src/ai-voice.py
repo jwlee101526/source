@@ -4,7 +4,7 @@ import asyncio
 from transformers import pipeline
 
 whisper = pipeline(task="automatic-speech-recognition", model="openai/whisper-base")
-generator = pipeline(task="text-generation", model="Qwen/Qwen2.5-0.5B-Instruct")
+generator = pipeline(task="text-generation", model="Qwen/Qwen2.5-1.5B-Instruct")
 tts = pipeline(task="text-to-speech")
 
 voice_txt = ""
@@ -60,6 +60,9 @@ def question_answer(question):
         max_new_tokens=50,
         return_full_text=False,
         do_sample=False,
+        temperature=None,
+        top_p=None,
+        top_k=None,
         pad_token_id=generator.tokenizer.eos_token_id,
     )
 
