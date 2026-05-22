@@ -11,11 +11,11 @@ def analyze_news(article):
         return "", "", "", ""
 
     # 1. 기사 요약
-    summary_result = summarizer(article)
+    summary_result = summarizer(article, truncation=True)
     summary = summary_result[0]["summary_text"]
 
     # 2. 감성 분석
-    sentiment_result = classifier(article)
+    sentiment_result = classifier(article, truncation=True)
     sentiment = (
         f"감성 : {sentiment_result[0]['label']} "
         f"점수 : {sentiment_result[0]['score']:.4f}"
