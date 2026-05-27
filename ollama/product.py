@@ -11,6 +11,10 @@ import gradio as gr
 
 load_dotenv()
 
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
+os.environ["LANGCHAIN_PROJECT"] = "product-review-analyzer"
+
 
 MODELS = ["qwen", "exaone", "watsonx", "gemma"]
 MAX_REVIEWS = 10
