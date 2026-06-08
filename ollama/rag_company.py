@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import pickle
-from typing import Final
 from rich import print
 
 import gradio as gr
