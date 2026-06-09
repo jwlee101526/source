@@ -1,0 +1,8 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "self_rag": "./langstudio-test.py:graph",
+    "pdf_rag": "./pdf_rag_graph.py:graph"
+  },
+  "env": ".env"
+}

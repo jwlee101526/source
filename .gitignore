@@ -2,3 +2,5 @@
 **/.env
 **/db
 **/output
+**/image
+**/.**
